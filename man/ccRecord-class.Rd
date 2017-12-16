@@ -4,10 +4,10 @@
 \name{ccRecord-class}
 \alias{ccRecord}
 \alias{ccRecord-class}
-\title{The S3 class which holds all the CCHIC patient record - served as a database.}
+\title{The S4 class which holds all the CCHIC patient record - served as a database.}
 \description{
-ccRecord is a class to hold the raw episode data parsed directly from XML or
-CSV files.
+ccRecord is a class to hold the raw episode data parsed directly 
+from XML or CSV files.
 }
 \section{Fields}{
 
@@ -17,7 +17,7 @@ the record is holding.}
 
 \item{\code{dmgtb}}{a data.table containing all the demographic information of each
 episode, including site_id, NHS number, PAS number, admission date/time,
-and discharge date/time. Call}
+and discharge date/time. This field is usually left empty.}
 
 \item{\code{infotb}}{a data.table holding the parsing information of each episode such as the
 parsing time and from which file it parsed from.}

@@ -23,12 +23,15 @@ ccTable$methods(
     method on a selected window period nearby the missing data."
         imputation_columns <- function(sd) {
             for (i in names(.self$conf)) {
-                imwin <- .self$conf[[i]][['missingness']][['impute_2d']]
+                imwin <- .self$conf[[i]][['missingness']][['impute']]
                 if (!is.null(imwin)) {
                     fun <- imwin[['fun']]
                     lead <- imwin[['lead']]
                     lag <- imwin[['lag']]
-                    sd[[i]] <- interpolateVec(v=sd[[i]], lead=lead, lag=lag, FUN=fun, na.rm=T)
+                    if (fun %in% c("mean", "median", "max", "min", "sum"))
+                        sd[[i]] <- interpolateVec(v=sd[[i]], lead=lead, lag=lag, FUN=fun, na.rm=TRUE)
+                    else 
+                        sd[[i]] <- interpolateVec(v=sd[[i]], lead=lead, lag=lag, FUN=fun)
                 }
             }
             return(sd)

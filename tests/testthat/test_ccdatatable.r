@@ -17,28 +17,28 @@ test.record <- function(v, item) {
 
 test_that("test create table",{
     
-    ccd_delta <- suppressWarnings(deltaTime(ccd, pseudotime=T))
+    ccd_delta <- suppressWarnings(deltaTime(ccd, pseudotime=TRUE))
     conf <- yaml.load_file('../data/test_2yml.yml')
 
     tb <- ccTable(record=ccd_delta, conf=conf)
-    tb$create.table(freq=1)
+    tb$create_table(freq=1)
     # assign table to both origin and clean table
     expect_true(!is.null(tb$torigin))
     expect_equivalent(tb$torigin, tb$tclean)
 })
 
-test_that("test get.missingness", {
+test_that("test get_missingness", {
     cr <-
         ccRecord()+new.episode(list(NIHR_HIC_ICU_0108=data.frame(time=as.numeric(seq(100)),
                                                        item2d=as.character(rep(10,100)))))
     tb <- ccTable(record=cr, conf=yaml.load_file('../data/test_2yml.yml'))
-    tb$create.table(freq=1)
+    tb$create_table(freq=1)
     tb$conf[[1]][['missingness']][['labels']][['yellow']] <- 1
-    tb$get.missingness()
+    tb$get_missingness()
     expect_equal(tb$dquality$missingness$NIHR_HIC_ICU_0108.yellow, 100/101*100)
 
     tb$conf[[1]][['missingness']][['labels']][['yellow']] <- 0.1
-    tb$get.missingness()
+    tb$get_missingness()
     expect_equal(tb$dquality$missingness$NIHR_HIC_ICU_0108.yellow, 100/1001*100)
 
 
@@ -46,7 +46,7 @@ test_that("test get.missingness", {
     # check the case when there is no missingness table
     tb$dquality$missingness <- data.table(NULL)
     tb$tclean <- data.table(NULL)
-    tb$filter.missingness()
+    tb$filter_missingness()
     expect_true(any(class(tb$tclean)=="data.table"))
     expect_equivalent(tclean, tb$tclean)
 })
@@ -62,7 +62,7 @@ test_that("test filter missingness",
           yellow: 1
       accept_2d:
           yellow: 70 
-      impute_2d:
+      impute:
           lead: 3
           lag: 3
           fun: median
@@ -75,9 +75,9 @@ test_that("test filter missingness",
     missingness_run <- function(v, item="NIHR_HIC_ICU_0108") {
         cr <- test.record(v, item)
         tb <- ccTable(record=cr, conf=conf)
-        tb$create.table(freq=1)
-        tb$filter.missingness()
-        tb$apply.filters()
+        tb$create_table(freq=1)
+        tb$filter_missingness()
+        tb$apply_filters()
         expect_true(any(class(tb$tclean) == "data.table"))
         return(tb)
     }
@@ -110,7 +110,7 @@ test_that("test imputation",
           yellow: 1
       accept_2d:
           yellow: 70 
-      impute_2d:
+      impute:
           lead: 1
           lag: 1
           fun: median
@@ -121,7 +121,7 @@ test_that("test imputation",
     imputation_run <- function(v, item="NIHR_HIC_ICU_0108") {
         cr <- test.record(v, item)
         tb <- ccTable(record=cr, conf=conf)
-        tb$create.table(freq=1)
+        tb$create_table(freq=1)
         tb$imputation()
         return(tb)
     }
@@ -144,7 +144,7 @@ test_that("test imputation",
   shortName: test_val
   dataItem: Heart rate
   missingness:
-      impute_2d:
+      impute:
           lead: 1
           lag: 1
           fun: sum"
@@ -154,7 +154,6 @@ test_that("test imputation",
     tb <- imputation_run(list(c(1, 10, NA, 100)))
     expect_equivalent(tb$tclean$NIHR_HIC_ICU_0108,
                       c(1, 1, 10, sum(c(10, 100)), 100))
-
 })
 #
 #
@@ -178,11 +177,11 @@ test_that("test imputation",
 #test_that("test apply filter", 
 #{
 #    tb <- env$tb
-#    tb$filter.ranges()
-#    tb$filter.category()
-#    tb$filter.missingness()
+#    tb$filter_range()
+#    tb$filter_categories()
+#    tb$filter_missingness()
 #    tb$filter.nodata()
-#    tb$apply.filters()
+#    tb$apply_filters()
 #    tt <<- tb
 #})
 #
